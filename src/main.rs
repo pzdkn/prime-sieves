@@ -1,4 +1,5 @@
 use prime_sieve::sieve_eratosthenes;
 fn main() {
-    println!("Hello, world!");
+    let primes = sieve_eratosthenes(10);
+    println!("{:?}" ,primes);
 }
