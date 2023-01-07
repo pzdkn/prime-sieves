@@ -1,5 +1,6 @@
 use std::f64;
 use std::iter::repeat;
+use std::cmp;
 
 /// Sieve of Eratosthenes
 pub fn sieve_eratosthenes(end: u128) -> Vec<u128>{
@@ -17,10 +18,10 @@ pub fn sieve_eratosthenes(end: u128) -> Vec<u128>{
 }
 
 /// Segmented Sieve
-pub fn segmented_sieve(end: u128, segment_size: u128){
+pub fn segmented_sieve(end: u128, segment_size: u128) -> Vec<u128>{
     fn mark_primes(is_prime: &mut Vec<bool>, prime: &u128, segment_start: u128, segment_end: u128){
-        let factor : u128 = (segment_start  as f64 / *prime  as f64).ceil() as u128;
-        for i in (factor*prime..segment_end+1).step_by(*prime as usize){
+        let factor : u128 = cmp::max((segment_start  as f64 / *prime  as f64).ceil() as u128, 2);
+        for i in (factor*prime..segment_end).step_by(*prime as usize){
             is_prime[(i - segment_start) as usize] = false;
         }
     }
@@ -28,11 +29,12 @@ pub fn segmented_sieve(end: u128, segment_size: u128){
     let end = end + end % segment_size as u128;
     let mut primes: Vec<u128> = Vec::new();
 
-    for mut segment_start in(0..end+1).step_by(segment_size as usize) {
+    for segment_start in(0..end).step_by(segment_size as usize) {
         let mut is_prime: Vec<bool> = repeat(true).take(segment_size as usize).collect();
         let segment_end = segment_start + segment_size;
+        let mut shifted_start = segment_start;
         if segment_start == 0 {
-            segment_start = 2;
+            shifted_start = 2;
             is_prime[0] = false; 
             is_prime[1] = false;
         }
@@ -40,12 +42,17 @@ pub fn segmented_sieve(end: u128, segment_size: u128){
         for prime in &primes {
             mark_primes(&mut is_prime, prime, segment_start, segment_end)
         }
-        for i in segment_start..(segment_end as f64).sqrt() as u128 {
-            if is_prime[i as usize] {
+
+        for i in shifted_start..(segment_end as f64).sqrt() as u128 + 1{
+            if is_prime[(i - segment_start) as usize] {
                 mark_primes(&mut is_prime, &i, segment_start, segment_end);
             }
         }
 
-    }
+        primes.extend(is_prime.iter().enumerate()
+                        .filter(|(_, x)| **x)
+                        .map(|(i, _)| i as u128 + segment_start));
 
+    }
+    primes
 }
