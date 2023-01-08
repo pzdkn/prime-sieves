@@ -56,3 +56,28 @@ pub fn segmented_sieve(end: u128, segment_size: u128) -> Vec<u128>{
     }
     primes
 }
+
+// Linear Sieve
+pub fn linear_sieve(end: u128) -> Vec<u128>{
+    let mut primes: Vec<u128> = Vec::new();
+    let mut is_primes: Vec<u128> = repeat(0).take(end as usize + 1).collect();
+    
+    for candidate in 2..end{
+        match is_primes[candidate as usize] {
+            0 => {
+                is_primes[candidate as usize] = candidate;
+                primes.push(candidate);
+             }
+            _ => {},
+        }
+        for smaller_prime in primes.iter().filter(|x| **x <= candidate) {
+            let not_a_prime = candidate * smaller_prime;
+            if not_a_prime <= end {
+                is_primes[(candidate * smaller_prime) as usize] = *smaller_prime;
+            } 
+
+        }
+    }
+    primes
+
+}
