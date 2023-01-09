@@ -81,3 +81,29 @@ pub fn linear_sieve(end: u128) -> Vec<u128>{
     primes
 
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_eratosthenes(){
+        let end = 10;
+        let primes = sieve_eratosthenes(end);
+        assert_eq!(primes, vec![2, 3, 5, 7])
+    }
+
+    #[test]
+    fn test_segmented_sieve(){
+        let end = 10;
+        let primes = segmented_sieve(end, 2);
+        assert_eq!(primes, vec![2, 3, 5, 7]);
+    }
+
+    #[test]
+    fn test_linear_sieve(){
+        let end = 10;
+        let primes = linear_sieve(end);
+        assert_eq!(primes, vec![2, 3, 5, 7]);
+    }
+}
